@@ -1,0 +1,12 @@
+{
+  "name": "game-tic-tac-toe",
+  "main": "index.html",
+  "scripts": {
+    "start": "browser-sync start --files ./src --server ./src"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "browser-sync": "^2.26.12"
+  }
+}
