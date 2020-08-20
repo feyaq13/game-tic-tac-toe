@@ -1,0 +1,20 @@
+html, body {
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.game {
+  border-collapse: collapse;
+}
+
+.cell {
+  border: 1px solid;
+  width: 100px;
+  height: 100px;
+}
