@@ -1,3 +1,1 @@
-Title: Selflog
-
-Planned release date: early 2021
+Title: Tic-tac-toe
