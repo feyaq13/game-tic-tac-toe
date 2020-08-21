@@ -11,10 +11,13 @@ body {
 
 .game {
   border-collapse: collapse;
+  cursor: pointer;
 }
 
 .cell {
   border: 1px solid;
   width: 100px;
   height: 100px;
+  text-align: center;
+  font-size: 40px;
 }
