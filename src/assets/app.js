@@ -47,10 +47,9 @@ class ArtificialPlayer extends AbstractPlayer {
   }
 
   makeTurn(cb, availableCells) {
-    console.log({ availableCells });
-
     setTimeout(() => {
-      cb((Math.random() * 9) >> 0);
+      const randomIndex = Math.floor(Math.random() * availableCells.length);
+      cb(availableCells[randomIndex]);
     }, 1000);
   }
 }
@@ -96,30 +95,35 @@ class Game {
   }
 
   _gameIsWon() {
-    const player1Field = this._field
-      .map((cell) => Number(cell === this._player1))
-      .join("");
+    const player1Field = this._field.map((cell) =>
+      Number(cell === this._player1)
+    );
 
-    const player2Field = this._field
-      .map((cell) => Number(cell === this._player2))
-      .join("");
+    const player2Field = this._field.map((cell) =>
+      Number(cell === this._player2)
+    );
 
-    const winningPatterns = [
-      0b111000000,
-      0b000111000,
-      0b000000111,
-      0b100100100,
-      0b010010010,
-      0b001001001,
-      0b100010001,
-      0b001010100,
-    ];
+    const player1HasWon =
+      player1Field[0] * player1Field[1] * player1Field[2] +
+        player1Field[3] * player1Field[4] * player1Field[5] +
+        player1Field[6] * player1Field[7] * player1Field[8] +
+        player1Field[0] * player1Field[3] * player1Field[6] +
+        player1Field[1] * player1Field[4] * player1Field[7] +
+        player1Field[2] * player1Field[5] * player1Field[8] +
+        player1Field[0] * player1Field[4] * player1Field[8] +
+        player1Field[2] * player1Field[4] * player1Field[6] ===
+      1;
 
-    const player1FieldNumber = parseInt(+player1Field, 2);
-    const player2FieldNumber = parseInt(+player2Field, 2);
-
-    const player1HasWon = winningPatterns.includes(player1FieldNumber);
-    const player2HasWon = winningPatterns.includes(player2FieldNumber);
+    const player2HasWon =
+      player2Field[0] * player2Field[1] * player2Field[2] +
+        player2Field[3] * player2Field[4] * player2Field[5] +
+        player2Field[6] * player2Field[7] * player2Field[8] +
+        player2Field[0] * player2Field[3] * player2Field[6] +
+        player2Field[1] * player2Field[4] * player2Field[7] +
+        player2Field[2] * player2Field[5] * player2Field[8] +
+        player2Field[0] * player2Field[4] * player2Field[8] +
+        player2Field[2] * player2Field[4] * player2Field[6] ===
+      1;
 
     return player1HasWon || player2HasWon;
   }
