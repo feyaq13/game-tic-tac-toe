@@ -34,7 +34,8 @@ class Game {
   }
 
   askPlayerName() {
-    return prompt("Имя:", "");
+    return "USER";
+    // return prompt("Имя:", "");
   }
   //
   _markedCells(activePlayer, cell) {
@@ -57,6 +58,10 @@ class Game {
     this._markedCells(this._activePlayer, cellIndex);
   }
 
+  _thereAreEmptyFields(fields) {
+    return fields.filter((field) => field === null).length;
+  }
+
   processNextTurn() {
     this._activePlayer.makeTurn((cellIndex) => {
       if (this._field[cellIndex] === null) {
@@ -65,7 +70,12 @@ class Game {
 
       this._activePlayer =
         this._activePlayer === this._player1 ? this._player2 : this._player1;
-      this.processNextTurn();
+
+      if (this._thereAreEmptyFields(this._field) > 0) {
+        return this.processNextTurn();
+      } else {
+        return console.log("game over");
+      }
     });
   }
 }
