@@ -5,7 +5,7 @@ class AbstractPlayer {
 
   makeTurn(cb) {
     setTimeout(() => {
-      cb((Math.random() * 10) >> 0);
+      cb((Math.random() * 9) >> 0);
     }, 1000);
   }
 
@@ -36,22 +36,32 @@ class Game {
   askPlayerName() {
     return prompt("Имя:", "");
   }
+  //
+  _markedCells(activePlayer, cell) {
+    const markPlayer1 = "o";
+    const markPlayer2 = "x";
+
+    if (activePlayer === this._player1) {
+      document.getElementsByClassName("cell")[cell].textContent = markPlayer1;
+    } else {
+      document.getElementsByClassName("cell")[cell].textContent = markPlayer2;
+    }
+  }
 
   fillFieldCell(cellIndex) {
     console.log(
       `Игрок ${this._activePlayer} заполнил клетку с индеком ${cellIndex}`
     );
 
-    //
-
     this._field[cellIndex] = this._activePlayer;
+    this._markedCells(this._activePlayer, cellIndex);
   }
 
   processNextTurn() {
     this._activePlayer.makeTurn((cellIndex) => {
-      this.fillFieldCell(cellIndex);
-
-      //
+      if (this._field[cellIndex] === null) {
+        this.fillFieldCell(cellIndex);
+      }
 
       this._activePlayer =
         this._activePlayer === this._player1 ? this._player2 : this._player1;
