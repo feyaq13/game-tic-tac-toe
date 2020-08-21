@@ -77,14 +77,14 @@ class Game {
     );
 
     this._field[cellIndex] = this._activePlayer;
-    this._markedCells(this._activePlayer, cellIndex);
+    this._markCell(cellIndex);
   }
 
-  _markedCells(activePlayer, cell) {
+  _markCell(cell) {
     const markPlayer1 = "o";
     const markPlayer2 = "x";
 
-    if (activePlayer === this._player1) {
+    if (this._activePlayer === this._player1) {
       document.getElementsByClassName("cell")[cell].textContent = markPlayer1;
     } else {
       document.getElementsByClassName("cell")[cell].textContent = markPlayer2;
