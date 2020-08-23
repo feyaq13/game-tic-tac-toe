@@ -65,6 +65,22 @@ class Game {
     this._field = new Array(9).fill(null);
   }
 
+  _saveWinningsHistory(winner) {
+    let winners = {
+      USER: 0,
+      PC: 0,
+    };
+
+    if (localStorage.winnersStat) {
+      debugger;
+      winners = JSON.parse(localStorage.winnersStat);
+
+      String(winner) === "USER" ? ++winners["USER"] : ++winners["PC"];
+    }
+
+    localStorage.winnersStat = JSON.stringify(winners);
+  }
+
   askPlayerName() {
     return "USER";
     // return prompt("Имя:", "");
@@ -142,6 +158,7 @@ class Game {
 
             this.processNextTurn();
           } else {
+            this._saveWinningsHistory(this._activePlayer);
             console.log(`game is won by ${this._activePlayer}`);
           }
         } else {
