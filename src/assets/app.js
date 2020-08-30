@@ -61,7 +61,10 @@ class Game {
       ? new ArtificialPlayer()
       : new HumanPlayer(this.askPlayerName());
 
-    this._activePlayer = this._player1;
+    this._lastWinPlayer = localStorage.lastWinPlayer || null;
+    this._activePlayer =
+      this._lastWinPlayer === "USER" ? this._player1 : this._player2;
+    console.log(`Сейчас ходит ${this._lastWinPlayer}`);
     this._field = new Array(9).fill(null);
   }
 
@@ -160,6 +163,9 @@ class Game {
           } else {
             this._saveWinningsHistory(this._activePlayer);
             console.log(`game is won by ${this._activePlayer}`);
+            localStorage.lastWinPlayer = this._lastWinPlayer = String(
+              this._activePlayer
+            );
           }
         } else {
           console.log("game over");
