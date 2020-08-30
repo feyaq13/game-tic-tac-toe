@@ -129,8 +129,8 @@ class Game {
         player1Field[1] * player1Field[4] * player1Field[7] +
         player1Field[2] * player1Field[5] * player1Field[8] +
         player1Field[0] * player1Field[4] * player1Field[8] +
-        player1Field[2] * player1Field[4] * player1Field[6] ===
-      1;
+        player1Field[2] * player1Field[4] * player1Field[6] >
+      0;
 
     const player2HasWon =
       player2Field[0] * player2Field[1] * player2Field[2] +
@@ -140,8 +140,8 @@ class Game {
         player2Field[1] * player2Field[4] * player2Field[7] +
         player2Field[2] * player2Field[5] * player2Field[8] +
         player2Field[0] * player2Field[4] * player2Field[8] +
-        player2Field[2] * player2Field[4] * player2Field[6] ===
-      1;
+        player2Field[2] * player2Field[4] * player2Field[6] >
+      0;
 
     return player1HasWon || player2HasWon;
   }
