@@ -30,7 +30,7 @@ class HumanPlayer extends AbstractPlayer {
   }
 
   onMakeTurn(e) {
-    if (e.target.classList[0] === "cell") {
+    if (e.target.classList[0] === "cell" && !e.target.textContent) {
       const ind = e.target.dataset.index;
 
       if (this._onMadeTurn) {
