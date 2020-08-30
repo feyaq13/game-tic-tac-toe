@@ -64,7 +64,7 @@ class Game {
     this._lastWinPlayer = localStorage.lastWinPlayer || null;
     this._activePlayer =
       this._lastWinPlayer === "USER" ? this._player1 : this._player2;
-    console.log(`Сейчас ходит ${this._lastWinPlayer}`);
+    console.log(`Первый ходит ${this._activePlayer}`);
     this._field = new Array(9).fill(null);
   }
 
@@ -75,7 +75,6 @@ class Game {
     };
 
     if (localStorage.winnersStat) {
-      debugger;
       winners = JSON.parse(localStorage.winnersStat);
 
       String(winner) === "USER" ? ++winners["USER"] : ++winners["PC"];
