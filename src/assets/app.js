@@ -99,7 +99,13 @@ class Game {
   }
 
   askPlayerName() {
-    return localStorage.userName || prompt("Имя:", "");
+    return localStorage.userName || this._validateUserName();
+  }
+
+  _validateUserName() {
+    let userName = prompt("Имя:", "Игрок1");
+
+    return userName ? userName : this._validateUserName();
   }
 
   fillFieldCell(cellIndex) {
