@@ -150,13 +150,13 @@ class Game {
     }, []);
   }
 
-  _gameIsWon() {
-    let getBinaryMatrixCells = (player) => {
-      return this._field.map((cell) => Number(cell === player));
-    };
+  _getBinaryMatrixCells(player) {
+    return this._field.map((cell) => Number(cell === player));
+  }
 
-    const player1Cells = getBinaryMatrixCells(this._player1);
-    const player2Cells = getBinaryMatrixCells(this._player2);
+  _gameIsWon() {
+    const player1Cells = this._getBinaryMatrixCells(this._player1);
+    const player2Cells = this._getBinaryMatrixCells(this._player2);
 
     return this.playerHasWon(player1Cells) || this.playerHasWon(player2Cells);
   }
