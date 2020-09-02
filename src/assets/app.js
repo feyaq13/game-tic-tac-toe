@@ -88,14 +88,12 @@ class Game {
 
   _saveNumberOfGamesPlayed() {
     if (localStorage.numberOfGamesPlayed) {
-      this._numberOfGamesPlayed = JSON.parse(localStorage.numberOfGamesPlayed);
+      this._numberOfGamesPlayed = localStorage.numberOfGamesPlayed;
     }
 
     this._numberOfGamesPlayed = ++this._numberOfGamesPlayed;
 
-    localStorage.numberOfGamesPlayed = JSON.stringify(
-      this._numberOfGamesPlayed
-    );
+    localStorage.numberOfGamesPlayed = this._numberOfGamesPlayed;
   }
 
   askPlayerName() {
