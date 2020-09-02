@@ -95,6 +95,22 @@ class Game {
 
     this._field[cellIndex] = this._activePlayer;
     this._markCell(cellIndex);
+
+    if (this._gameIsWon()) {
+      this._saveWinningsHistory(this._activePlayer);
+      console.log(`game is won by ${this._activePlayer}`);
+
+      return;
+    } else if (this._getEmptyCells().length < 1) {
+      console.log("game over");
+
+      return;
+    }
+
+    this._activePlayer =
+      this._activePlayer === this._player1 ? this._player2 : this._player1;
+
+    this.processNextTurn();
   }
 
   _markCell(cell) {
@@ -108,76 +124,51 @@ class Game {
     }
   }
 
-  _thereAreEmptyFields(fields) {
-    return fields.filter((field) => field === null).length > 0;
+  _getEmptyCells() {
+    return this._field.reduce((availableCells, cell, i) => {
+      if (!cell) {
+        availableCells.push(i);
+      }
+
+      return availableCells;
+    }, []);
   }
 
   _gameIsWon() {
-    const player1Field = this._field.map((cell) =>
-      Number(cell === this._player1)
+    let getBinaryMatrixCells = (player) => {
+      return this._field.map((cell) => Number(cell === player));
+    };
+
+    const player1Cells = getBinaryMatrixCells(this._player1);
+    const player2Cells = getBinaryMatrixCells(this._player2);
+
+    return this.playerHasWon(player1Cells) || this.playerHasWon(player2Cells);
+  }
+
+  playerHasWon(playerCells) {
+    const [c0, c1, c2, c3, c4, c5, c6, c7, c8] = playerCells;
+
+    return (
+      c0 * c1 * c2 +
+        c3 * c4 * c5 +
+        c6 * c7 * c8 +
+        c0 * c3 * c6 +
+        c1 * c4 * c7 +
+        c2 * c5 * c8 +
+        c0 * c4 * c8 +
+        c2 * c4 * c6 >
+      0
     );
-
-    const player2Field = this._field.map((cell) =>
-      Number(cell === this._player2)
-    );
-
-    const player1HasWon =
-      player1Field[0] * player1Field[1] * player1Field[2] +
-        player1Field[3] * player1Field[4] * player1Field[5] +
-        player1Field[6] * player1Field[7] * player1Field[8] +
-        player1Field[0] * player1Field[3] * player1Field[6] +
-        player1Field[1] * player1Field[4] * player1Field[7] +
-        player1Field[2] * player1Field[5] * player1Field[8] +
-        player1Field[0] * player1Field[4] * player1Field[8] +
-        player1Field[2] * player1Field[4] * player1Field[6] >
-      0;
-
-    const player2HasWon =
-      player2Field[0] * player2Field[1] * player2Field[2] +
-        player2Field[3] * player2Field[4] * player2Field[5] +
-        player2Field[6] * player2Field[7] * player2Field[8] +
-        player2Field[0] * player2Field[3] * player2Field[6] +
-        player2Field[1] * player2Field[4] * player2Field[7] +
-        player2Field[2] * player2Field[5] * player2Field[8] +
-        player2Field[0] * player2Field[4] * player2Field[8] +
-        player2Field[2] * player2Field[4] * player2Field[6] >
-      0;
-
-    return player1HasWon || player2HasWon;
   }
 
   processNextTurn() {
-    this._activePlayer.makeTurn(
-      (ind) => {
-        if (this._thereAreEmptyFields(this._field)) {
-          this.fillFieldCell(ind);
+    const availableCells = this._getEmptyCells();
 
-          if (!this._gameIsWon()) {
-            this._activePlayer =
-              this._activePlayer === this._player1
-                ? this._player2
-                : this._player1;
+    if (availableCells.length < 1) {
+      return;
+    }
 
-            this.processNextTurn();
-          } else {
-            this._saveWinningsHistory(this._activePlayer);
-            console.log(`game is won by ${this._activePlayer}`);
-            localStorage.lastWinPlayer = this._lastWinPlayer = String(
-              this._activePlayer
-            );
-          }
-        } else {
-          console.log("game over");
-        }
-      },
-      this._field.reduce((availableCells, cell, i) => {
-        if (!cell) {
-          availableCells.push(i);
-        }
-
-        return availableCells;
-      }, [])
-    );
+    this._activePlayer.makeTurn(this.fillFieldCell.bind(this), availableCells);
   }
 }
 
