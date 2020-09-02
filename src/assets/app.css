@@ -4,8 +4,8 @@ html, body {
 
 @font-face {
   font-family: 'Space Monoregular';
-  src: url('../spacemono-regular.woff2') format('woff2'),
-  url('../spacemono-regular.woff') format('woff');
+  src: url('./spacemono-regular.woff2') format('woff2'),
+  url('./spacemono-regular.woff') format('woff');
   font-weight: normal;
   font-style: normal;
 }
