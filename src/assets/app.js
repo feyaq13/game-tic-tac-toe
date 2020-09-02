@@ -66,6 +66,7 @@ class Game {
       this._lastWinPlayer === "USER" ? this._player1 : this._player2;
     console.log(`Первый ходит ${this._activePlayer}`);
     this._field = new Array(9).fill(null);
+    this._numberOfGamesPlayed = localStorage.numberOfGamesPlayed || 0;
   }
 
   _saveWinningsHistory(winner) {
@@ -76,11 +77,25 @@ class Game {
 
     if (localStorage.winnersStat) {
       winners = JSON.parse(localStorage.winnersStat);
-
-      String(winner) === "USER" ? ++winners["USER"] : ++winners["PC"];
     }
 
+    String(winner) === "USER" ? ++winners["USER"] : ++winners["PC"];
     localStorage.winnersStat = JSON.stringify(winners);
+    localStorage.lastWinPlayer = this._lastWinPlayer = String(
+      this._activePlayer
+    );
+  }
+
+  _saveNumberOfGamesPlayed() {
+    if (localStorage.numberOfGamesPlayed) {
+      this._numberOfGamesPlayed = JSON.parse(localStorage.numberOfGamesPlayed);
+    }
+
+    this._numberOfGamesPlayed = ++this._numberOfGamesPlayed;
+
+    localStorage.numberOfGamesPlayed = JSON.stringify(
+      this._numberOfGamesPlayed
+    );
   }
 
   askPlayerName() {
@@ -98,10 +113,12 @@ class Game {
 
     if (this._gameIsWon()) {
       this._saveWinningsHistory(this._activePlayer);
+      this._saveNumberOfGamesPlayed();
       console.log(`game is won by ${this._activePlayer}`);
 
       return;
     } else if (this._getEmptyCells().length < 1) {
+      this._saveNumberOfGamesPlayed();
       console.log("game over");
 
       return;
