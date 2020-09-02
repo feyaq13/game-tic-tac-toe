@@ -75,6 +75,8 @@ class Game {
       PC: 0,
     };
 
+    localStorage.userName = this._player1;
+
     if (localStorage.winnersStat) {
       winners = JSON.parse(localStorage.winnersStat);
     }
