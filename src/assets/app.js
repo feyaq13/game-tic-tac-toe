@@ -63,13 +63,13 @@ class Game {
 
     this._lastWinPlayer = localStorage.lastWinPlayer || null;
     this._activePlayer =
-      this._lastWinPlayer === "USER" ? this._player1 : this._player2;
+      this._lastWinPlayer === "PC" ? this._player2 : this._player1;
     console.log(`Первый ходит ${this._activePlayer}`);
     this._field = new Array(9).fill(null);
     this._numberOfGamesPlayed = localStorage.numberOfGamesPlayed || 0;
   }
 
-  _saveWinningsHistory(winner) {
+  _saveGameHistory(winner) {
     let winners = {
       USER: 0,
       PC: 0,
@@ -79,7 +79,7 @@ class Game {
       winners = JSON.parse(localStorage.winnersStat);
     }
 
-    String(winner) === "USER" ? ++winners["USER"] : ++winners["PC"];
+    String(winner) === "PC" ? ++winners["PC"] : ++winners["USER"];
     localStorage.winnersStat = JSON.stringify(winners);
     localStorage.lastWinPlayer = this._lastWinPlayer = String(
       this._activePlayer
@@ -97,8 +97,7 @@ class Game {
   }
 
   askPlayerName() {
-    return "USER";
-    // return prompt("Имя:", "");
+    return localStorage.userName || prompt("Имя:", "");
   }
 
   fillFieldCell(cellIndex) {
@@ -110,7 +109,7 @@ class Game {
     this._markCell(cellIndex);
 
     if (this._gameIsWon()) {
-      this._saveWinningsHistory(this._activePlayer);
+      this._saveGameHistory(this._activePlayer);
       this._saveNumberOfGamesPlayed();
       console.log(`game is won by ${this._activePlayer}`);
 
