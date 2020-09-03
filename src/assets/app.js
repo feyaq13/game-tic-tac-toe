@@ -4,7 +4,7 @@ class AbstractPlayer {
   }
 
   makeTurn(cb) {
-    throw new Error("Abstract");
+    throw new Error('Abstract');
   }
 
   toString() {
@@ -24,13 +24,11 @@ class HumanPlayer extends AbstractPlayer {
   }
 
   _setupEventListeners() {
-    document
-      .getElementById("game")
-      .addEventListener("click", this.onMakeTurn.bind(this));
+    document.getElementById('game').addEventListener('click', this.onMakeTurn.bind(this));
   }
 
   onMakeTurn(e) {
-    if (e.target.classList[0] === "cell" && !e.target.textContent) {
+    if (e.target.classList[0] === 'cell' && !e.target.textContent) {
       const ind = e.target.dataset.index;
 
       if (this._onMadeTurn) {
@@ -43,7 +41,7 @@ class HumanPlayer extends AbstractPlayer {
 
 class ArtificialPlayer extends AbstractPlayer {
   constructor() {
-    super("PC");
+    super('PC');
   }
 
   makeTurn(cb, availableCells) {
@@ -57,16 +55,19 @@ class ArtificialPlayer extends AbstractPlayer {
 class Game {
   constructor(isAgainstComputer = true) {
     this._player1 = new HumanPlayer(this.askPlayerName());
-    this._player2 = isAgainstComputer
-      ? new ArtificialPlayer()
-      : new HumanPlayer(this.askPlayerName());
+    this._player2 = isAgainstComputer ? new ArtificialPlayer() : new HumanPlayer(this.askPlayerName());
 
     this._lastWinPlayer = localStorage.lastWinPlayer || null;
-    this._activePlayer =
-      this._lastWinPlayer === "PC" ? this._player2 : this._player1;
-    console.log(`Первый ходит ${this._activePlayer}`);
+    this._activePlayer = this._lastWinPlayer === 'PC' ? this._player2 : this._player1;
     this._field = new Array(9).fill(null);
     this._numberOfGamesPlayed = localStorage.numberOfGamesPlayed || 0;
+    this._showNumberOfGamesPlayed(document.getElementsByClassName('statics__number-of-games-played')[0]);
+    console.log(`Первый ходит ${this._activePlayer}`);
+    this._btnNewGame = document.getElementsByClassName('btn-new-game')[0]
+  }
+
+  _showNumberOfGamesPlayed(elemHTML) {
+    elemHTML.textContent = this._numberOfGamesPlayed || 0;
   }
 
   _saveGameHistory(winner) {
@@ -81,11 +82,9 @@ class Game {
       winners = JSON.parse(localStorage.winnersStat);
     }
 
-    String(winner) === "PC" ? ++winners["PC"] : ++winners["USER"];
+    String(winner) === 'PC' ? ++winners['PC'] : ++winners['USER'];
     localStorage.winnersStat = JSON.stringify(winners);
-    localStorage.lastWinPlayer = this._lastWinPlayer = String(
-      this._activePlayer
-    );
+    localStorage.lastWinPlayer = this._lastWinPlayer = String(this._activePlayer);
   }
 
   _saveNumberOfGamesPlayed() {
@@ -96,6 +95,7 @@ class Game {
     this._numberOfGamesPlayed = ++this._numberOfGamesPlayed;
 
     localStorage.numberOfGamesPlayed = this._numberOfGamesPlayed;
+    this._showNumberOfGamesPlayed(document.getElementsByClassName('statics__number-of-games-played')[0]);
   }
 
   askPlayerName() {
@@ -103,15 +103,13 @@ class Game {
   }
 
   _validateUserName() {
-    let userName = prompt("Имя:", "Игрок1");
+    let userName = prompt('Имя:', 'Игрок1');
 
     return userName ? userName : this._validateUserName();
   }
 
   fillFieldCell(cellIndex) {
-    console.log(
-      `Игрок ${this._activePlayer} заполнил клетку с индеком ${cellIndex}`
-    );
+    console.log(`Игрок ${this._activePlayer} заполнил клетку с индеком ${cellIndex}`);
 
     this._field[cellIndex] = this._activePlayer;
     this._markCell(cellIndex);
@@ -124,25 +122,24 @@ class Game {
       return;
     } else if (this._getEmptyCells().length < 1) {
       this._saveNumberOfGamesPlayed();
-      console.log("game over");
+      console.log('game over');
 
       return;
     }
 
-    this._activePlayer =
-      this._activePlayer === this._player1 ? this._player2 : this._player1;
+    this._activePlayer = this._activePlayer === this._player1 ? this._player2 : this._player1;
 
     this.processNextTurn();
   }
 
   _markCell(cell) {
-    const markPlayer1 = "o";
-    const markPlayer2 = "x";
+    const markPlayer1 = 'o';
+    const markPlayer2 = 'x';
 
     if (this._activePlayer === this._player1) {
-      document.getElementsByClassName("cell")[cell].textContent = markPlayer1;
+      document.getElementsByClassName('cell')[cell].textContent = markPlayer1;
     } else {
-      document.getElementsByClassName("cell")[cell].textContent = markPlayer2;
+      document.getElementsByClassName('cell')[cell].textContent = markPlayer2;
     }
   }
 
