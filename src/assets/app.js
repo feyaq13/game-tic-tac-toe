@@ -27,6 +27,10 @@ class HumanPlayer extends AbstractPlayer {
     document.getElementById('game').addEventListener('click', this.onMakeTurn.bind(this));
   }
 
+  _removeEventListeners() {
+    document.getElementById('game').removeEventListener('click', this.onMakeTurn.bind(this));
+  }
+
   onMakeTurn(e) {
     if (e.target.classList[0] === 'cell' && !e.target.textContent) {
       const ind = e.target.dataset.index;
@@ -118,11 +122,13 @@ class Game {
       this._saveGameHistory(this._activePlayer);
       this._saveNumberOfGamesPlayed();
       console.log(`game is won by ${this._activePlayer}`);
+      this._showNewGameButton();
 
       return;
     } else if (this._getEmptyCells().length < 1) {
       this._saveNumberOfGamesPlayed();
       console.log('game over');
+      this._showNewGameButton();
 
       return;
     }
@@ -188,6 +194,29 @@ class Game {
     }
 
     this._activePlayer.makeTurn(this.fillFieldCell.bind(this), availableCells);
+  }
+
+  _resetGame() {
+    this._field = this._field.map((cell, i) => {
+      document.getElementsByClassName('cell')[i].textContent = null;
+
+      return null;
+    });
+
+    this._btnNewGame.removeEventListener('click', this._resetGame);
+    this._player1._removeEventListeners();
+    this._hideNewGameButton();
+    this.processNextTurn();
+  }
+
+  _showNewGameButton() {
+    this._btnNewGame.hidden = false;
+    this._btnNewGame.addEventListener('click', this._resetGame.bind(this));
+  }
+
+  _hideNewGameButton() {
+    this._btnNewGame.hidden = true;
+    this._btnNewGame.removeEventListener('click', this._resetGame.bind(this));
   }
 }
 
