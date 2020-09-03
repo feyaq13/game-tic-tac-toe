@@ -1,12 +1,13 @@
 {
   "name": "game-tic-tac-toe",
-  "main": "index.html",
+  "version": "1.0.0",
+  "license": "MIT",
   "scripts": {
-    "start": "browser-sync start --files ./src --server ./src"
+    "dev": "parcel src/index.html",
+    "build": "parcel build src/index.html --out-dir docs --public-url . --no-source-maps --no-cache"
   },
-  "author": "",
-  "license": "ISC",
   "devDependencies": {
-    "browser-sync": "^2.26.12"
+    "parcel-bundler": "^1.12.4",
+    "prettier": "^2.1.1"
   }
 }
