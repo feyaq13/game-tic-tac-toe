@@ -2,6 +2,18 @@ html, body {
   height: 100%;
 }
 
+@font-face {
+  font-family: 'Space Monoregular';
+  src: url('../spacemono-regular.woff2') format('woff2'),
+  url('../spacemono-regular.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+body, .btn-new-game {
+  font-family: "Space Monoregular", sans-serif;
+}
+
 body {
   display: flex;
   flex-direction: column;
@@ -10,6 +22,7 @@ body {
 }
 
 .game {
+  margin-bottom: 30px;
   border-collapse: collapse;
   cursor: pointer;
 }
@@ -24,4 +37,23 @@ body {
 
 .statics p {
   display: inline-block;
+  font-size: 18px;
+}
+
+.btn-new-game {
+  position: absolute;
+  top: 50px;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  transition: box-shadow 200ms ease-in;
+  background-image: linear-gradient(red 0%, orangered 50%, orange 100%);
+  font-size: 30px;
+  color: white;
+}
+
+.btn-new-game:active,
+.btn-new-game:focus {
+  outline: none;
+  box-shadow: 0 0 10px 5px orangered, 0 10px 5px 0 orange;
 }

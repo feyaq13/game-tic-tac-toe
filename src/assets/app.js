@@ -138,8 +138,8 @@ class Game {
   }
 
   _markCell(cell) {
-    const markPlayer1 = 'o';
-    const markPlayer2 = 'x';
+    const markPlayer1 = '🔥';
+    const markPlayer2 = '❄️';
 
     if (this._activePlayer === this._player1) {
       document.getElementsByClassName('cell')[cell].textContent = markPlayer1;
