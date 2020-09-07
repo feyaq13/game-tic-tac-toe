@@ -66,8 +66,7 @@ class Game {
     this._field = new Array(9).fill(null);
     this._numberOfGamesPlayed = localStorage.numberOfGamesPlayed || 0;
     this._showNumberOfGamesPlayed(document.getElementsByClassName('statics__number-of-games-played')[0]);
-    console.log(`Первый ходит ${this._activePlayer}`);
-    this._btnNewGame = document.getElementsByClassName('btn-new-game')[0]
+    this._btnNewGame = document.getElementsByClassName('btn-new-game')[0];
   }
 
   _showNumberOfGamesPlayed(elemHTML) {
@@ -188,6 +187,7 @@ class Game {
 
   processNextTurn() {
     const availableCells = this._getEmptyCells();
+    console.log(`Ходит ${this._activePlayer}`);
 
     if (availableCells.length < 1) {
       return;
