@@ -49,6 +49,6 @@ export class SmartArtificialPlayer extends ArtificialPlayer {
 
       const randomIndex = Math.floor(Math.random() * availableCells.length);
       cb(availableCells[randomIndex]);
-    }, 1000);
+    }, 100);
   }
 }

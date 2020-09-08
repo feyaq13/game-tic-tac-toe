@@ -1,5 +1,5 @@
-import { HumanPlayer } from './human-player';
-import { SmartArtificialPlayer } from './smart-artificial-player';
+import { HumanPlayer } from './player/human-player';
+import { SmartArtificialPlayer } from './player/smart-artificial-player';
 
 export class Game {
   constructor(config) {
@@ -29,7 +29,7 @@ export class Game {
      */
     this._player2 = isAgainstComputer ? new SmartArtificialPlayer() : new HumanPlayer(this.askPlayerName());
 
-    this._lastWinnerName = this._storage.getLastWinner();
+    this._lastWinnerName = this._storage.getLastWinnerName();
 
     /**
      *

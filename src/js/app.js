@@ -1,6 +1,6 @@
 import { gui } from './gui';
 import { Game } from './game';
-import { SessionStorageGameHistoryStorage } from './session-storage-game-history-storage';
+import { SessionStorageGameHistoryStorage } from './history-storage/session-storage-game-history-storage';
 
 const storage = new SessionStorageGameHistoryStorage();
 
