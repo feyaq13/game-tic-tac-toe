@@ -36,15 +36,7 @@ export class SmartArtificialPlayer extends ArtificialPlayer {
 
       const [combination] = availableCombinations;
 
-      const availableCells = field
-        .reduce((availableCells, cell, i) => {
-          if (!cell) {
-            availableCells.push(i);
-          }
-
-          return availableCells;
-        }, [])
-        .filter((cellInd) => combination.includes(cellInd));
+      const availableCells = this._getAvailableCellIndexes(field).filter((cellInd) => combination.includes(cellInd));
       console.log({ combination, availableCells });
 
       const randomIndex = Math.floor(Math.random() * availableCells.length);

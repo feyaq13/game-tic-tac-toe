@@ -6,14 +6,18 @@ export class ArtificialPlayer extends AbstractPlayer {
     this.symbol = '❄️';
   }
 
-  makeTurn(cb, field) {
-    const availableCells = field.reduce((availableCells, cell, i) => {
+  _getAvailableCellIndexes(field) {
+    return field.reduce((availableCells, cell, i) => {
       if (!cell) {
         availableCells.push(i);
       }
 
       return availableCells;
     }, []);
+  }
+
+  makeTurn(cb, field) {
+    const availableCells = this._getAvailableCellIndexes(field);
 
     setTimeout(() => {
       const randomIndex = Math.floor(Math.random() * availableCells.length);
