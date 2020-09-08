@@ -16,6 +16,7 @@ class HumanPlayer extends AbstractPlayer {
   constructor(name) {
     super(name);
     this._setupEventListeners();
+    this.symbol = '🔥';
     this._onMadeTurn = null;
   }
 
@@ -27,7 +28,7 @@ class HumanPlayer extends AbstractPlayer {
     document.getElementById('game').addEventListener('click', this.onMakeTurn.bind(this));
   }
 
-  _removeEventListeners() {
+  removeEventListeners() {
     document.getElementById('game').removeEventListener('click', this.onMakeTurn.bind(this));
   }
 
@@ -44,11 +45,20 @@ class HumanPlayer extends AbstractPlayer {
 }
 
 class ArtificialPlayer extends AbstractPlayer {
-  constructor() {
-    super('PC');
+  constructor(name = 'PC') {
+    super(name);
+    this.symbol = '❄️';
   }
 
-  makeTurn(cb, availableCells) {
+  makeTurn(cb, field) {
+    const availableCells = field.reduce((availableCells, cell, i) => {
+      if (!cell) {
+        availableCells.push(i);
+      }
+
+      return availableCells;
+    }, []);
+
     setTimeout(() => {
       const randomIndex = Math.floor(Math.random() * availableCells.length);
       cb(availableCells[randomIndex]);
@@ -56,49 +66,73 @@ class ArtificialPlayer extends AbstractPlayer {
   }
 }
 
+class SmartArtificialPlayer extends ArtificialPlayer {
+  constructor() {
+    super();
+    this._winningCellsCombinations = [
+      [0, 1, 2],
+      [0, 3, 6],
+      [0, 4, 8],
+      [1, 4, 7],
+      [2, 5, 8],
+      [2, 4, 6],
+      [3, 4, 5],
+      [6, 7, 8],
+    ];
+  }
+  makeTurn(cb, field) {
+    const nonOpponentCellIndexes = field.reduce((nonOpponentCellIndexes, cell, i) => {
+      if (cell === this || !cell) {
+        nonOpponentCellIndexes.push(i);
+      }
+
+      return nonOpponentCellIndexes;
+    }, []);
+    console.log(nonOpponentCellIndexes);
+
+    setTimeout(() => {
+      const availableCombinations = this._winningCellsCombinations.filter((combination) => {
+        return combination.every((num) => {
+          if (nonOpponentCellIndexes.includes(num)) {
+            return combination;
+          }
+        });
+      });
+
+      const [combination] = availableCombinations;
+
+      const availableCells = field
+        .reduce((availableCells, cell, i) => {
+          if (!cell) {
+            availableCells.push(i);
+          }
+
+          return availableCells;
+        }, [])
+        .filter((cellInd) => combination.includes(cellInd));
+      console.log({ combination, availableCells });
+
+      const randomIndex = Math.floor(Math.random() * availableCells.length);
+      cb(availableCells[randomIndex]);
+    }, 1000);
+  }
+}
+
 class Game {
-  constructor(isAgainstComputer = true) {
-    this._player1 = new HumanPlayer(this.askPlayerName());
-    this._player2 = isAgainstComputer ? new ArtificialPlayer() : new HumanPlayer(this.askPlayerName());
+  constructor(config) {
+    const { isAgainstComputer, storage, gui } = config;
+    this._storage = storage;
+    this._gui = gui;
+    this._gui.onResetClicked(this._reset.bind(this));
 
-    this._lastWinPlayer = localStorage.lastWinPlayer || null;
-    this._activePlayer = this._lastWinPlayer === 'PC' ? this._player2 : this._player1;
     this._field = new Array(9).fill(null);
-    this._numberOfGamesPlayed = localStorage.numberOfGamesPlayed || 0;
-    this._showNumberOfGamesPlayed(document.getElementsByClassName('statics__number-of-games-played')[0]);
-    this._btnNewGame = document.getElementsByClassName('btn-new-game')[0];
-  }
 
-  _showNumberOfGamesPlayed(elemHTML) {
-    elemHTML.textContent = this._numberOfGamesPlayed || 0;
-  }
+    this._player1 = new HumanPlayer(this.askPlayerName());
+    this._player2 = isAgainstComputer ? new SmartArtificialPlayer() : new HumanPlayer(this.askPlayerName());
+    this._lastWinner = this._storage.getLastWinner();
+    this._activePlayer = this._lastWinner === 'PC' ? this._player2 : this._player1;
 
-  _saveGameHistory(winner) {
-    let winners = {
-      USER: 0,
-      PC: 0,
-    };
-
-    localStorage.userName = this._player1;
-
-    if (localStorage.winnersStat) {
-      winners = JSON.parse(localStorage.winnersStat);
-    }
-
-    String(winner) === 'PC' ? ++winners['PC'] : ++winners['USER'];
-    localStorage.winnersStat = JSON.stringify(winners);
-    localStorage.lastWinPlayer = this._lastWinPlayer = String(this._activePlayer);
-  }
-
-  _saveNumberOfGamesPlayed() {
-    if (localStorage.numberOfGamesPlayed) {
-      this._numberOfGamesPlayed = localStorage.numberOfGamesPlayed;
-    }
-
-    this._numberOfGamesPlayed = ++this._numberOfGamesPlayed;
-
-    localStorage.numberOfGamesPlayed = this._numberOfGamesPlayed;
-    this._showNumberOfGamesPlayed(document.getElementsByClassName('statics__number-of-games-played')[0]);
+    this._gui.displayPlayedGames(this._storage.getPlayedGames());
   }
 
   askPlayerName() {
@@ -115,37 +149,36 @@ class Game {
     console.log(`Игрок ${this._activePlayer} заполнил клетку с индеком ${cellIndex}`);
 
     this._field[cellIndex] = this._activePlayer;
-    this._markCell(cellIndex);
+    this._gui.markCell(cellIndex, this._activePlayer);
 
-    if (this._gameIsWon()) {
-      this._saveGameHistory(this._activePlayer);
-      this._saveNumberOfGamesPlayed();
-      console.log(`game is won by ${this._activePlayer}`);
-      this._showNewGameButton();
-
-      return;
-    } else if (this._getEmptyCells().length < 1) {
-      this._saveNumberOfGamesPlayed();
+    if (this.shouldContinue()) {
+      this._activePlayer = this._activePlayer === this._player1 ? this._player2 : this._player1;
+      this.processNextTurn();
+    } else {
       console.log('game over');
-      this._showNewGameButton();
-
-      return;
     }
-
-    this._activePlayer = this._activePlayer === this._player1 ? this._player2 : this._player1;
-
-    this.processNextTurn();
   }
 
-  _markCell(cell) {
-    const markPlayer1 = '🔥';
-    const markPlayer2 = '❄️';
+  shouldContinue() {
+    const gameIsWon = this._gameIsWon();
+    const noCellsLeft = this._getEmptyCells().length < 1;
 
-    if (this._activePlayer === this._player1) {
-      document.getElementsByClassName('cell')[cell].textContent = markPlayer1;
-    } else {
-      document.getElementsByClassName('cell')[cell].textContent = markPlayer2;
+    if (gameIsWon) {
+      this._storage.saveGameHistory(this._activePlayer);
+      console.log(`${this._activePlayer} has won`);
+    } else if (noCellsLeft) {
+      this._storage.saveGameHistory();
+      console.log('Draw');
     }
+
+    if (gameIsWon || noCellsLeft) {
+      this._gui.displayPlayedGames(this._storage.getPlayedGames());
+      this._gui.showNewGameButton();
+
+      return false;
+    }
+
+    return true;
   }
 
   _getEmptyCells() {
@@ -193,32 +226,93 @@ class Game {
       return;
     }
 
-    this._activePlayer.makeTurn(this.fillFieldCell.bind(this), availableCells);
+    this._activePlayer.makeTurn(this.fillFieldCell.bind(this), this._field);
   }
 
-  _resetGame() {
-    this._field = this._field.map((cell, i) => {
-      document.getElementsByClassName('cell')[i].textContent = null;
-
-      return null;
-    });
-
-    this._btnNewGame.removeEventListener('click', this._resetGame);
-    this._player1._removeEventListeners();
-    this._hideNewGameButton();
+  _reset() {
+    this._gui.clearCells();
+    this._gui.hideNewGameButton();
+    this._field = this._field.map(() => null);
     this.processNextTurn();
-  }
-
-  _showNewGameButton() {
-    this._btnNewGame.hidden = false;
-    this._btnNewGame.addEventListener('click', this._resetGame.bind(this));
-  }
-
-  _hideNewGameButton() {
-    this._btnNewGame.hidden = true;
-    this._btnNewGame.removeEventListener('click', this._resetGame.bind(this));
   }
 }
 
-const ticTacToe = new Game();
+const gui = {
+  _onResetCb: null,
+  _btnNewGame: document.getElementsByClassName('btn-new-game')[0],
+  displayPlayedGames(number) {
+    document.getElementsByClassName('statics__number-of-games-played')[0].textContent = number;
+  },
+  markCell(cellInd, player) {
+    document.getElementsByClassName('cell')[cellInd].textContent = player.symbol;
+  },
+  showNewGameButton() {
+    this._btnNewGame.hidden = false;
+    this._btnNewGame.addEventListener('click', this._onResetCb);
+  },
+  hideNewGameButton() {
+    this._btnNewGame.hidden = true;
+    this._btnNewGame.removeEventListener('click', this._onResetCb);
+  },
+  onResetClicked(cb) {
+    this._onResetCb = cb;
+  },
+  clearCells() {
+    for (let i = 0; i < 9; i++) {
+      document.getElementsByClassName('cell')[i].textContent = null;
+    }
+  },
+};
+
+class GameHistoryStorage {
+  constructor(source = {}) {
+    this._storageSource = source;
+  }
+
+  getLastWinner() {
+    return this._storageSource.lastWinPlayer || null;
+  }
+  getPlayedGames() {
+    return this._storageSource.numberOfGamesPlayed || 0;
+  }
+  saveGameHistory(winner) {
+    const winners = this._storageSource.winnersStat
+      ? JSON.parse(this._storageSource.winnersStat)
+      : {
+          USER: 0,
+          PC: 0,
+        };
+
+    if (String(winner) === 'PC') {
+      winners.PC++;
+    } else if (winner) {
+      winners.USER++;
+    }
+
+    this._storageSource.winnersStat = JSON.stringify(winners);
+    this._storageSource.lastWinPlayer = String(winner);
+
+    if (this._storageSource.numberOfGamesPlayed) {
+      this._storageSource.numberOfGamesPlayed++;
+    } else {
+      this._storageSource.numberOfGamesPlayed = 1;
+    }
+  }
+}
+
+class LocalStorageGameHistoryStorage extends GameHistoryStorage {
+  constructor() {
+    super(localStorage);
+  }
+}
+
+class SessionStorageGameHistoryStorage extends GameHistoryStorage {
+  constructor() {
+    super(sessionStorage);
+  }
+}
+
+const storage = new SessionStorageGameHistoryStorage();
+
+const ticTacToe = new Game({ isAgainstComputer: true, gui, storage });
 ticTacToe.processNextTurn();
