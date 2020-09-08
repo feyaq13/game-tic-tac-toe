@@ -9,5 +9,8 @@
   "devDependencies": {
     "parcel-bundler": "^1.12.4",
     "prettier": "^2.1.1"
+  },
+  "dependencies": {
+    "src": "^1.1.2"
   }
 }
