@@ -23,7 +23,6 @@ export class SmartArtificialPlayer extends ArtificialPlayer {
 
       return nonOpponentCellIndexes;
     }, []);
-    console.log(nonOpponentCellIndexes);
 
     setTimeout(() => {
       const availableCombinations = this._winningCellsCombinations.filter((combination) => {
@@ -36,8 +35,13 @@ export class SmartArtificialPlayer extends ArtificialPlayer {
 
       const [combination] = availableCombinations;
 
-      const availableCells = this._getAvailableCellIndexes(field).filter((cellInd) => combination.includes(cellInd));
-      console.log({ combination, availableCells });
+      const availableCells = this._getAvailableCellIndexes(field).filter((cellInd) => {
+        if (combination instanceof Array) {
+          return combination.includes(cellInd);
+        } else {
+          return true;
+        }
+      });
 
       const randomIndex = Math.floor(Math.random() * availableCells.length);
       cb(availableCells[randomIndex]);
